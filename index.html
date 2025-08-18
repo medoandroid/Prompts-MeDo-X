@@ -180,108 +180,7 @@
             const showToast = (message, type = 'info', isLoading = false) => {
                 const toast = $('#toast-notification');
                 if(!toast) return;
-                $('#to        .project-item { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; background: var(--input-bg-color); cursor: pointer; transition: all 0.2s ease; }
-        .project-item:hover { transform: scale(1.02); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .placeholder { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 300px; color: var(--text-secondary-color); font-size: 1.2rem; background-color: var(--input-bg-color); border-radius: var(--border-radius); }
-        #toast-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%); color: var(--text-color); padding: 1rem 1.5rem; border-radius: 12px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 1rem; z-index: 1001; transition: all 0.4s ease-in-out; background-color: var(--surface-color); border-left: 5px solid var(--primary-color);}
-        #toast-notification.success { border-left-color: var(--success-color); }
-        #toast-notification.error { border-left-color: var(--danger-color); }
-        #toast-notification.visible { transform: translateX(-50%) translateY(0); }
-        .spinner { display: flex; align-items: center; justify-content: center; }
-        .spinner .dot { width: 8px; height: 8px; margin: 0 3px; background-color: currentColor; border-radius: 50%; animation: wave 1.4s infinite ease-in-out both; }
-        .spinner .dot:nth-child(1) { animation-delay: -0.32s; }
-        .spinner .dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes wave { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-        .json-output { white-space: pre; font-family: monospace; font-size: 0.9rem; direction: ltr; text-align: left; overflow-x: auto; }
-        .json-output::-webkit-scrollbar { height: 8px; }
-        .json-output::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
-        .json-key { color: var(--danger-color); }
-        .json-string { color: var(--success-color); }
-        .json-number { color: var(--primary-color); }
-        .json-boolean, .json-null { color: #6f42c1; }
-        .dark-mode .json-boolean, .dark-mode .json-null { color: #c39ac9; }
-        footer { text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); color: var(--text-secondary-color); font-size: 0.9rem; }
-    </style>
-</head>
-<body>
-    <div id="projects-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2>المشاريع المحفوظة</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="projects-modal"><i class="fa-solid fa-xmark"></i></button></div><ul id="projects-list" class="projects-list"></ul></div></div>
-    <div id="preview-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2 id="preview-title">معاينة المشروع</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="preview-modal"><i class="fa-solid fa-xmark"></i></button></div><div id="preview-content" class="preview-content"></div><div class="modal-footer"><div id="preview-toolbar" class="header-actions"></div><button id="load-from-preview-btn" class="action-btn primary-btn">تحميل للمحرر</button></div></div></div>
-    <div id="confirm-dialog" class="modal-overlay"><div class="modal-content" style="max-width: 400px;"><div class="modal-header"><h2>تأكيد</h2></div><p>حقل الإدخال فارغ. هل تريد المتابعة وإنشاء محتوى عشوائي إبداعي؟</p><div class="modal-footer"><button id="confirm-dialog-no" class="action-btn secondary-btn">لا</button><button id="confirm-dialog-yes" class="action-btn primary-btn">نعم، أنشئ</button></div></div></div>
-    <div id="toast-notification"><div id="toast-spinner" class="spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span id="toast-message"></span></div>
-
-    <div class="container">
-        <header><h1>Prompts MeDo X</h1><div class="header-actions"><button class="action-btn" id="my-projects-btn" title="المشاريع المحفوظة"><i class="fa-solid fa-folder-open"></i></button><button class="action-btn" id="themeToggleBtn" title="تغيير الثيم"><i class="fa-solid fa-moon"></i></button></div></header>
-        <div class="card">
-            <div id="output-options" class="segmented-control" style="margin-bottom: 1.5rem;">
-                <button class="sg-btn active" data-type="short_script">سكربت قصير</button>
-                <button class="sg-btn" data-type="veo_prompt">برومبت Veo3</button>
-                <button class="sg-btn" data-type="youtube_script">سكربت يوتيوب</button>
-                <button class="sg-btn" data-type="chatbot_prompt">برومبت Chatbot</button>
-            </div>
-            <div class="input-header"><label for="userInput" style="font-weight: 700; opacity: 0.9; font-size: 1.1rem;">فكرتك الأساسية</label><button class="action-btn" id="inspiration-btn" title="إلهام"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>إلهام</span></button></div>
-            <textarea id="userInput" placeholder="اكتب فكرتك هنا أو اضغط على زر الإلهام..."></textarea>
-            <div class="input-grid">
-                <div class="input-group">
-                    <label>اختر الموديل</label>
-                    <div class="segmented-control" id="model-selector">
-                        <button class="sg-btn active" data-model="gemini-2.5-pro">Pro</button>
-                        <button class="sg-btn" data-model="gemini-2.5-flash">Flash</button>
-                    </div>
-                    <p id="model-helper-text" class="helper-text">الأقوى والأكثر إبداعًا، قد يكون أبطأ قليلاً.</p>
-                </div>
-                 <div class="input-group">
-                    <label>اللهجة</label>
-                    <div class="custom-select" id="dialect-selector"><div class="select-trigger"><span>مصرية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مصرية">مصرية</div><div class="option-item" data-value="سعودية">سعودية</div><div class="option-item" data-value="لبنانية">لبنانية</div><div class="option-item" data-value="خليجية">خليجية</div><div class="option-item" data-value="فصحى">فصحى</div><div class="option-item" data-value="other">أخرى...</div></div></div>
-                    <input type="text" id="custom-dialect-input" placeholder="اكتب لهجتك هنا..." style="display: none; margin-top: 0.5rem;">
-                </div>
-                <div class="input-group">
-                    <label>نبرة الكتابة</label>
-                    <div class="custom-select" id="tone-of-voice"><div class="select-trigger"><span>إبداعية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="إبداعية">إبداعية</div><div class="option-item" data-value="رسمية">رسمية</div><div class="option-item" data-value="تسويقية">تسويقية</div><div class="option-item" data-value="تعليمية">تعليمية</div><div class="option-item" data-value="مرحة">مرحة</div></div></div>
-                </div>
-                 <div class="input-group" data-controls-for="chatbot_prompt">
-                    <label>اختر دور للـ AI</label>
-                    <div class="custom-select" id="chatbot-role"><div class="select-trigger"><span>مساعد عام</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مساعد عام">مساعد عام</div><div class="option-item" data-value="خبير تسويق">خبير تسويق</div><div class="option-item" data-value="كاتب سيناريو">كاتب سيناريو</div><div class="option-item" data-value="مطور برامج">مطور برامج</div><div class="option-item" data-value="مدرب شخصي">مدرب شخصي</div></div></div>
-                </div>
-                <div class="input-group" data-controls-for="short_script veo_prompt">
-                    <label for="director-style">البصمة الإخراجية (اختياري)</label>
-                    <input type="text" id="director-style" placeholder="مثال: بأسلوب سينمائي قديم">
-                </div>
-                <div class="input-group" data-controls-for="veo_prompt">
-                    <label for="sceneCount">عدد المشاهد (للبرومبت)</label>
-                    <input type="number" id="sceneCount" value="3" min="1" max="10">
-                </div>
-                <div class="input-group" data-controls-for="youtube_script">
-                    <label for="videoDuration">مدة الفيديو (بالدقائق)</label>
-                    <input type="number" id="videoDuration" value="5" min="1" max="60">
-                </div>
-            </div>
-            <div class="main-controls"><button id="generateAllBtn" class="action-btn secondary-btn"><span>إنشاء الكل</span></button><button id="generateBtn" class="action-btn primary-btn"><span>أنشئ الآن</span></button></div>
-        </div>
-        <div class="card">
-            <div id="output-container" style="display: none;"><div class="output-header"><h3>التحفة النهائية</h3><div id="main-toolbar" class="header-actions"></div></div><div id="outputTabs"></div><div id="outputContent"></div></div>
-            <div id="placeholder" class="placeholder">الاستوديو الإبداعي في انتظار أوامرك...</div>
-        </div>
-        <footer><p>جميع الحقوق محفوظة Mohamed Ayman - MeDoAnDrOiD 2025</p></footer>
-    </div>
-
-    <script>
-    try {
-        document.addEventListener('DOMContentLoaded', function() {
-            const API_KEY = 'AIzaSyAL-BevRKG83YT2IcPt4qEU7vy7BXKT4uc';
-            const PROJECTS_STORAGE_KEY = 'MeDoX_Projects_Masterpiece';
-            let currentOutputFormat = 'short_script';
-            let lastGeneratedData = {};
-            let isGenerating = false;
-            let selectedModel = 'gemini-2.5-flash';
-            const apiCache = new Map();
-
-            const $ = (selector) => document.querySelector(selector);
-            
-            const showToast = (message, type = 'info', isLoading = false) => {
-                const toast = $('#toast-notification');
-                if(!toast) return;
                 $('#toast-message').textContent = message;
-   ('#toast-message').textContent = message;
                 toast.className = 'toast';
                 if (type !== 'info') toast.classList.add(type);
                 $('#toast-spinner').style.display = isLoading ? 'flex' : 'none';
@@ -319,7 +218,7 @@
                 if (!text || !navigator.clipboard) return;
                 navigator.clipboard.writeText(text).then(() => {
                     const originalIcon = btn.innerHTML;
-                    btn.innerHTML = '✅';
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i>';
                     setTimeout(() => { btn.innerHTML = originalIcon; }, 2000);
                 });
             };
@@ -330,6 +229,20 @@
                 const a = document.createElement('a'); a.href = url; a.download = filename;
                 document.body.appendChild(a); a.click(); document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+            };
+            
+            const highlightJSON = (jsonString) => {
+                if (typeof jsonString != 'string') {
+                    jsonString = JSON.stringify(jsonString, undefined, 2);
+                }
+                jsonString = jsonString.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return jsonString.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                    let cls = 'json-number';
+                    if (/^"/.test(match)) { cls = /:$/.test(match) ? 'json-key' : 'json-string'; } 
+                    else if (/true|false/.test(match)) { cls = 'json-boolean'; } 
+                    else if (/null/.test(match)) { cls = 'json-null'; }
+                    return '<span class="' + cls + '">' + match + '</span>';
+                });
             };
 
             const performGeneration = async (prompt) => {
@@ -366,7 +279,7 @@
                 return generatedText;
             };
             
-            const buildMasterPrompt = ({ idea, format, sceneCount, directorStyle, duration, tone, dialect, script }) => {
+            const buildMasterPrompt = ({ idea, format, sceneCount, directorStyle, duration, tone, dialect, chatbotRole, script }) => {
                 const loglineInstruction = `\n\nFinally, at the very end of your entire response, add a short summary under a Markdown heading titled "## 💡 الملخص (Logline)".`;
                 const toneInstruction = `The tone of voice for the output must be: ${tone}.`;
                 const dialectInstruction = `All Arabic speech or text must be in the '${dialect}' dialect.`;
@@ -375,17 +288,19 @@
                     const inspirationToneMap = { 'تسويقية': 'a clever product campaign or a brand story', 'تعليمية': 'a complex topic explained simply or a compelling tutorial idea', 'إبداعية': 'an abstract, artistic, or surreal concept for a short film', 'رسمية': 'a corporate announcement or a professional presentation topic', 'مرحة': 'a funny, relatable situation for a comedy sketch' };
                     return `You are a creative strategist with deep cultural knowledge. Your task is to generate a single, powerful, and authentic video idea. The idea must be culturally relevant to the '${dialect}' Arabic dialect. The required tone of voice is: '${tone}'. Based on this tone, think deeply and provide a one-line concept that is highly suitable for it. For '${tone}', think of ${inspirationToneMap[tone] || 'a creative idea'}. CRITICAL: Your response must be ONLY the idea itself, in Arabic. Do not include any introductory phrases.`;
                 }
+                if(format === 'chatbot_prompt'){
+                    return `You are a world-leading expert in prompt engineering for Large Language Models. Transform the user's simple goal into a comprehensive, structured, and powerful 'mega-prompt' in Arabic. The mega-prompt must define a clear persona, context, goal, constraints, and instructions for the target AI. Persona for AI: '${chatbotRole}'. User's Goal: "${idea}"` + loglineInstruction;
+                }
                 if (format === 'short_script') {
-                    return `أنت كاتب سيناريو محترف. مهمتك تحويل فكرة بسيطة إلى سكربت قصير (Reel). ${directorStyle ? `اجعل الروح الفنية للسكربت بأسلوب ${directorStyle}.` : ''} ${toneInstruction} ${dialectInstruction} الفكرة: "${idea || 'شخص يكتشف أن ظله له حياة خاصة.'}"` + loglineInstruction;
+                    return `أنت كاتب سيناريو عبقري ومُبدع. مهمتك تحويل فكرة بسيطة إلى سكربت قصير (Reel) إبداعي، أصلي، وقوي جداً. ${directorStyle ? `اجعل الروح الفنية للسكربت بأسلوب ${directorStyle}.` : ''} ${toneInstruction} ${dialectInstruction} يجب أن يكون الأسلوب سلس وفيه طابع إنساني يلمس المشاعر. الفكرة: "${idea || 'شخص يكتشف أن ظله له حياة خاصة.'}"` + loglineInstruction;
                 }
                 if (format === 'youtube_script') {
-                    return `أنت كاتب محتوى وخبير يوتيوب. مهمتك هي كتابة سكربت فيديو يوتيوب احترافي وشامل. مدة الفيديو المستهدفة هي حوالي ${duration} دقائق. ${toneInstruction} ${dialectInstruction} يجب أن يكون السكربت مقسمًا بوضوح باستخدام Markdown إلى الأقسام التالية: "## 🎬 المقدمة (Hook)", "## 📝 المحتوى الأساسي" (مع عدة نقاط فرعية), "## ✨ الخاتمة", "## 🗣️ دعوة للعمل (Call to Action)". الموضوع: "${idea || 'كيف تبدأ قناتك على اليوتيوب في 2025'}"` + loglineInstruction;
+                    return `أنت كاتب محتوى وخبير يوتيوب عبقري. مهمتك كتابة سكربت فيديو يوتيوب احترافي وشامل يجذب المشاهد. مدة الفيديو المستهدفة هي حوالي ${duration} دقائق. ${toneInstruction} ${dialectInstruction} يجب أن يكون السكربت مقسمًا بوضوح باستخدام Markdown إلى الأقسام التالية: "## 🎬 المقدمة (Hook)", "## 📝 المحتوى الأساسي" (مع عدة نقاط فرعية وقصص وأمثلة), "## ✨ الخاتمة", "## 🗣️ دعوة للعمل (Call to Action)". الموضوع: "${idea || 'كيف تبدأ قناتك على اليوتيوب في 2025'}"` + loglineInstruction;
                 }
                 if (format === 'veo_prompt' || format === 'script_to_veo') {
-                    const promptTemplate = `\n[SCENE_BREAK]\n--- SCENE {scene_number} ---\n\n🎬 **Scene Visuals**\n* **Style:** ...\n* **Environment:** ...\n* **Visual Sequence (Paced for 8 seconds):**\n    * (0-2s): ...\n* **Camera:** ...\n\n🔊 **Audio & Voice**\n* **Sound Design:** ...\n* **Dialogue (Voiceover):** [CRITICAL: The dialogue MUST be in ARABIC ONLY, in the '${dialect}' dialect. Do not add any English translation or transliteration.]\n\n⚙️ **Advanced Settings**\n* **Duration:** 8 seconds\n* **Quality:** 4K\n* **Frame Rate:** 30fps\n* **Color Grading:** ...\n\n✅ **Optional Notes**\n* **Feel of the Scene:** ...\n* **Scene Tone:** ...`;
+                    const instructions = `You are a world-class director AI. Your task is to generate ${sceneCount} separate, complete, and valid JSON prompt objects. Each JSON object must be a standalone prompt for a single scene, but maintain narrative continuity with the previous scene. CRITICAL LANGUAGE PROTOCOL: All values in the JSON must be in ENGLISH, except for the 'dialogue.text' value, which MUST be in ARABIC, in the '${dialect}' dialect. After each complete JSON object, you MUST insert the delimiter \`[JSON_BREAK]\`. Your output must be ONLY the sequence of JSON objects and their delimiters. Ensure all generated content is safe and respectful, adhering to safety policies. The JSON structure for each scene is: {"project_title": "...", "scene_number": ..., "duration_seconds": 8, "visuals": {"style": "...", "environment": "...", "sequence": [{"time": "0-2s", "action": "..."}, ...], "camera": "..."}, "audio": {"sound_design": [{"time": "0-2s", "effect": "..."}], "dialogue": {"text": "...", "language": "Arabic", "dialect": "${dialect}"}}, "advanced_settings": {"quality": "4K", "fps": 30, "color_grading": "..."}}`;
                     let sourceMaterial = format === 'veo_prompt' ? `User's core idea: "${idea || 'A lonely watchmaker.'}"` : `The full Arabic script: --- \\n${script}\\n ---`;
-                    const instructions = `You are a world-class director AI. Your task is to generate a multi-scene cinematic prompt. CRITICAL LANGUAGE PROTOCOL: Your entire output for this prompt (style, environment, camera descriptions, etc.) MUST be in professional ENGLISH. The ONLY exception is the 'Dialogue (Voiceover)' value, which MUST be in ARABIC. You must generate a response composed of ${sceneCount} distinct scenes. ${directorStyle ? `The overall artistic style MUST be inspired by ${directorStyle}.` : ''} ${toneInstruction} After each complete scene block, you MUST insert the delimiter \`[SCENE_BREAK]\` on a new line. You must strictly follow the template.`;
-                    return `${instructions}\n\n**Source Material:** ${sourceMaterial}\n\n**MANDATORY TEMPLATE:**\n${promptTemplate}` + loglineInstruction;
+                    return `${instructions}\n\n**Source Material:** ${sourceMaterial}`;
                 }
                 return '';
             };
@@ -398,39 +313,43 @@
                 outputTabs.innerHTML = '';
                 outputContent.innerHTML = '';
                 lastGeneratedData = data;
-                const docFragment = document.createDocumentFragment();
 
                 Object.keys(data).forEach((key, index) => {
                     const tabBtn = document.createElement('button');
                     tabBtn.className = 'tab-btn';
                     tabBtn.dataset.target = `panel-${key}`;
-                    tabBtn.textContent = { short_script: 'سكربت قصير', veo_prompt: 'برومبت Veo3', youtube_script: 'سكربت يوتيوب' }[key];
+                    tabBtn.textContent = { short_script: 'سكربت قصير', veo_prompt: 'Veo3 (JSON)', youtube_script: 'سكربت يوتيوب', chatbot_prompt: 'برومبت Chatbot' }[key];
                     outputTabs.appendChild(tabBtn);
                     
                     const panel = document.createElement('div');
                     panel.id = `panel-${key}`;
                     panel.className = 'output-panel';
                     
-                    if (key === 'veo_prompt' && data[key] && data[key].includes('[SCENE_BREAK]')) {
-                        data[key].split('[SCENE_BREAK]').filter(s => s.trim() !== '').forEach((sceneText, i) => {
+                    if (key === 'veo_prompt' && data[key] && data[key].includes('{')) {
+                        const jsonBlocks = data[key].split('[JSON_BREAK]').filter(s => s.trim() !== '');
+                        jsonBlocks.forEach((jsonString, i) => {
                             const sceneBlock = document.createElement('div');
                             sceneBlock.className = 'scene-block';
-                            const titleMatch = sceneText.match(/--- SCENE (\d+) ---/);
-                            sceneBlock.innerHTML = `<div class="scene-header"><h2>${titleMatch ? `مشهد ${titleMatch[1]}` : `مشهد ${i + 1}`}</h2><button class="action-btn toolbar-btn" title="نسخ المشهد" data-action="copy-scene">📄</button></div><div class="scene-content">${marked.parse(sceneText)}</div>`;
-                            sceneBlock.querySelector('button[data-action="copy-scene"]').dataset.text = sceneText.trim();
+                            let sceneTitle = `مشهد ${i + 1}`;
+                            try {
+                                const parsedJson = JSON.parse(jsonString);
+                                sceneTitle = parsedJson.project_title ? `${parsedJson.project_title} - مشهد ${parsedJson.scene_number || i + 1}` : `مشهد ${parsedJson.scene_number || i + 1}`;
+                            } catch (e) {}
+
+                            sceneBlock.innerHTML = `<div class="scene-header"><h2>${sceneTitle}</h2><button class="action-btn toolbar-btn" title="نسخ المشهد" data-action="copy-scene"><i class="fa-regular fa-copy"></i></button></div><div class="scene-content"><pre class="json-output"><code>${highlightJSON(jsonString)}</code></pre></div>`;
+                            sceneBlock.querySelector('button[data-action="copy-scene"]').dataset.text = jsonString.trim();
                             panel.appendChild(sceneBlock);
                         });
                     } else if (data[key]) {
                         panel.innerHTML = marked.parse(data[key]);
                     }
-                    docFragment.appendChild(panel);
+                    outputContent.appendChild(panel);
                     
                     if (index === 0) {
                         tabBtn.classList.add('active');
                         panel.classList.add('active');
                     }
                 });
-                outputContent.appendChild(docFragment);
                 updateMainToolbar(Object.keys(data)[0]);
             };
             
@@ -438,13 +357,13 @@
                 const toolbarEl = $('#main-toolbar');
                 toolbarEl.innerHTML = '';
                 const createBtn = (action, icon, title) => {
-                    const btn = document.createElement('button'); btn.className = 'action-btn toolbar-btn'; btn.innerHTML = icon; btn.title = title; btn.dataset.action = action; return btn;
+                    const btn = document.createElement('button'); btn.className = 'action-btn toolbar-btn'; btn.innerHTML = `<i class="fa-solid ${icon}"></i>`; btn.title = title; btn.dataset.action = action; return btn;
                 };
-                toolbarEl.appendChild(createBtn('copy-active', '📋', 'نسخ المحتوى الحالي'));
-                toolbarEl.appendChild(createBtn('download-active', '💾', 'تنزيل المحتوى الحالي'));
-                toolbarEl.appendChild(createBtn('save', '➕', 'حفظ للمشاريع'));
+                toolbarEl.appendChild(createBtn('copy-active', 'fa-copy', 'نسخ المحتوى الحالي'));
+                toolbarEl.appendChild(createBtn('download-active', 'fa-download', 'تنزيل المحتوى الحالي'));
+                toolbarEl.appendChild(createBtn('save', 'fa-save', 'حفظ للمشاريع'));
                 if (activeTabKey === 'short_script' && lastGeneratedData.short_script) {
-                    toolbarEl.appendChild(createBtn('convert', '🔄', 'تحويل لبرومبت Veo3'));
+                    toolbarEl.appendChild(createBtn('convert', 'fa-wand-magic-sparkles', 'تحويل لبرومبت Veo3'));
                 }
             };
             
@@ -464,13 +383,22 @@
                     toggleModal('confirm-dialog', true); return;
                 }
                 
+                let dialect = $('#dialect-selector').dataset.value;
+                if (dialect === 'other') {
+                    dialect = $('#custom-dialect-input').value.trim();
+                    if(!dialect) {
+                        showToast('خطأ: يرجى إدخال اللهجة المخصصة.', 'error'); return;
+                    }
+                }
+
                 const inputs = {
                     idea: idea,
                     sceneCount: $('#sceneCount').value,
                     directorStyle: $('#director-style').value.trim(),
                     duration: $('#videoDuration').value,
                     tone: $('#tone-of-voice').dataset.value,
-                    dialect: $('#dialect-selector').dataset.value,
+                    dialect: dialect,
+                    chatbotRole: $('#chatbot-role').dataset.value,
                     script: lastGeneratedData.short_script || ''
                 };
                 
@@ -481,12 +409,13 @@
                 const results = {};
                 
                 if (isGeneratingAll) {
-                    const formats = ['short_script', 'veo_prompt', 'youtube_script'];
+                    const formats = ['short_script', 'veo_prompt', 'youtube_script', 'chatbot_prompt'];
                     const promises = formats.map(format => performGeneration(buildMasterPrompt({ ...inputs, format })));
-                    const [short, veo, youtube] = await Promise.all(promises);
+                    const [short, veo, youtube, chatbot] = await Promise.all(promises);
                     if (short) results.short_script = short;
                     if (veo) results.veo_prompt = veo;
                     if (youtube) results.youtube_script = youtube;
+                    if (chatbot) results.chatbot_prompt = chatbot;
                 } else {
                     const result = await performGeneration(buildMasterPrompt({ ...inputs, format: currentOutputFormat }));
                     if (result) results[currentOutputFormat] = result;
@@ -494,7 +423,7 @@
                 
                 toggleButtonLoading(mainBtn, false);
 
-                if (Object.keys(results).length > 0) {
+                if (Object.keys(results).length > 0 && Object.values(results).some(v => v)) {
                     showToast('تم الانتهاء بنجاح!', 'success');
                     renderOutput(results);
                 } else {
@@ -505,12 +434,14 @@
             function init() {
                 if (localStorage.getItem('theme') === 'dark') {
                     document.body.classList.add('dark-mode');
-                    $('#themeToggleBtn').textContent = '☀️';
+                    $('#themeToggleBtn').innerHTML = '<i class="fa-solid fa-sun"></i>';
+                } else {
+                    $('#themeToggleBtn').innerHTML = '<i class="fa-solid fa-moon"></i>';
                 }
                 updateVisibleControls();
 
-                $('#generateBtn').addEventListener('click', () => handleGeneration(false));
-                $('#generateAllBtn').addEventListener('click', () => handleGeneration(true));
+                $('#generateBtn').addEventListener('click', () => handleGeneration(false, false));
+                $('#generateAllBtn').addEventListener('click', () => handleGeneration(true, false));
 
                 $('#confirm-dialog-yes').addEventListener('click', () => {
                     toggleModal('confirm-dialog', false);
@@ -521,7 +452,9 @@
                 $('#inspiration-btn').addEventListener('click', async () => {
                     const btn = $('#inspiration-btn');
                     toggleButtonLoading(btn, true);
-                    const prompt = buildMasterPrompt({format: 'inspiration', tone: $('#tone-of-voice').dataset.value, dialect: $('#dialect-selector').dataset.value});
+                    let dialect = $('#dialect-selector').dataset.value;
+                    if (dialect === 'other') dialect = $('#custom-dialect-input').value.trim() || 'مصرية';
+                    const prompt = buildMasterPrompt({format: 'inspiration', tone: $('#tone-of-voice').dataset.value, dialect: dialect});
                     const idea = await performGeneration(prompt);
                     toggleButtonLoading(btn, false);
                     if (idea) {
@@ -533,7 +466,7 @@
                 $('#themeToggleBtn').addEventListener('click', () => {
                     document.body.classList.toggle('dark-mode');
                     const isDarkMode = document.body.classList.contains('dark-mode');
-                    $('#themeToggleBtn').textContent = isDarkMode ? '☀️' : '🌙';
+                    $('#themeToggleBtn').innerHTML = isDarkMode ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
                     localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
                 });
                 
@@ -574,6 +507,10 @@
                             sel.querySelector('span').textContent = opt.textContent;
                             sel.dataset.value = opt.dataset.value;
                             sel.classList.remove('open');
+                            
+                            if(sel.id === 'dialect-selector'){
+                                $('#custom-dialect-input').style.display = (opt.dataset.value === 'other') ? 'block' : 'none';
+                            }
                         }
                     });
                 });
@@ -591,7 +528,9 @@
                     else if (action === 'download-active') downloadContent(contentToUse, `PromptsMeDoX-${activeKey}.md`);
                     else if (action === 'save') {
                         if (Object.keys(lastGeneratedData).length === 0) { showToast('لا يوجد محتوى لحفظه!', 'error'); return; }
-                        const project = { id: Date.now(), idea: $('#userInput').value, settings: { scenes: $('#sceneCount').value, style: $('#director-style').value, duration: $('#videoDuration').value, tone: $('#tone-of-voice').dataset.value, dialect: $('#dialect-selector').dataset.value }, outputs: lastGeneratedData, date: new Date().toLocaleString('ar-EG') };
+                        let dialect = $('#dialect-selector').dataset.value;
+                        if (dialect === 'other') dialect = $('#custom-dialect-input').value.trim();
+                        const project = { id: Date.now(), idea: $('#userInput').value, settings: { scenes: $('#sceneCount').value, style: $('#director-style').value, duration: $('#videoDuration').value, tone: $('#tone-of-voice').dataset.value, dialect: dialect, chatbotRole: $('#chatbot-role').dataset.value }, outputs: lastGeneratedData, date: new Date().toLocaleString('ar-EG') };
                         const projects = JSON.parse(localStorage.getItem(PROJECTS_STORAGE_KEY) || '[]');
                         projects.unshift(project);
                         localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
@@ -599,7 +538,9 @@
                     } else if (action === 'convert') {
                         if (!lastGeneratedData.short_script || isGenerating) return;
                         showToast('جاري التحويل...', 'info', true);
-                        const inputs = { idea: $('#userInput').value.trim(), sceneCount: $('#sceneCount').value, directorStyle: $('#director-style').value.trim(), tone: $('#tone-of-voice').dataset.value, dialect: $('#dialect-selector').dataset.value, script: lastGeneratedData.short_script };
+                        let dialect = $('#dialect-selector').dataset.value;
+                        if (dialect === 'other') dialect = $('#custom-dialect-input').value.trim();
+                        const inputs = { idea: $('#userInput').value.trim(), sceneCount: $('#sceneCount').value, directorStyle: $('#director-style').value.trim(), tone: $('#tone-of-voice').dataset.value, dialect: dialect, script: lastGeneratedData.short_script };
                         const result = await performGeneration(buildMasterPrompt({ ...inputs, format: 'script_to_veo' }));
                         
                         if(result){
@@ -608,8 +549,6 @@
                             const veoTab = $('#outputTabs .tab-btn[data-target="panel-veo_prompt"]');
                             if(veoTab) veoTab.click();
                             showToast('تم التحويل بنجاح!', 'success');
-                        } else {
-                            showToast('فشل التحويل', 'error');
                         }
                     }
                 });
@@ -618,8 +557,8 @@
                     const tabBtn = e.target.closest('.tab-btn');
                     if (!tabBtn || tabBtn.classList.contains('active')) return;
                     const currentActiveTab = $('#outputTabs .tab-btn.active');
-                    const currentActivePanel = $('#outputContent .output-panel.active');
                     if(currentActiveTab) currentActiveTab.classList.remove('active');
+                    const currentActivePanel = $('#outputContent .output-panel.active');
                     if(currentActivePanel) currentActivePanel.classList.remove('active');
                     
                     tabBtn.classList.add('active');
@@ -635,6 +574,7 @@
                 
                 $('#my-projects-btn').addEventListener('click', () => {
                     const projectsList = $('#projects-list');
+                    if(!projectsList) return;
                     projectsList.innerHTML = '';
                     const projects = JSON.parse(localStorage.getItem(PROJECTS_STORAGE_KEY) || '[]');
                     if (projects.length === 0) {
@@ -667,15 +607,15 @@
                         
                         Object.keys(project.outputs).forEach(key => {
                             const title = document.createElement('h2');
-                            title.textContent = { short_script: 'سكربت قصير', veo_prompt: 'برومبت Veo3', youtube_script: 'سكربت يوتيوب' }[key];
+                            title.textContent = { short_script: 'سكربت قصير', veo_prompt: 'Veo3 (JSON)', youtube_script: 'سكربت يوتيوب', chatbot_prompt: 'برومبت Chatbot' }[key];
                             title.style.cssText = 'font-size:1.5rem;color:var(--primary-color);border-bottom:2px solid var(--border-color);padding-bottom:0.5rem;margin:1.5rem 0 1rem 0;';
                             previewContent.appendChild(title);
-                            if (key === 'veo_prompt' && project.outputs[key].includes('[SCENE_BREAK]')) {
-                                project.outputs[key].split('[SCENE_BREAK]').filter(s => s.trim() !== '').forEach((sceneText, i) => {
+                            if (key === 'veo_prompt' && project.outputs[key].includes('{')) {
+                                project.outputs[key].split('[JSON_BREAK]').filter(s => s.trim() !== '').forEach((jsonString, i) => {
                                     const sceneBlock = document.createElement('div'); sceneBlock.className = 'scene-block';
-                                    const titleMatch = sceneText.match(/--- SCENE (\d+) ---/);
-                                    sceneBlock.innerHTML = `<div class="scene-header"><h2>${titleMatch ? `مشهد ${titleMatch[1]}` : `مشهد ${i + 1}`}</h2><button class="action-btn toolbar-btn" title="نسخ المشهد" data-action="copy-scene">📄</button></div><div class="scene-content">${marked.parse(sceneText)}</div>`;
-                                    sceneBlock.querySelector('button[data-action="copy-scene"]').dataset.text = sceneText.trim();
+                                    let sceneTitle = `مشهد ${i + 1}`; try { const p = JSON.parse(jsonString); sceneTitle = p.project_title ? `${p.project_title} - م ${p.scene_number || i + 1}` : `مشهد ${p.scene_number || i + 1}`} catch(e){}
+                                    sceneBlock.innerHTML = `<div class="scene-header"><h2>${sceneTitle}</h2><button class="action-btn toolbar-btn" title="نسخ المشهد" data-action="copy-scene"><i class="fa-regular fa-copy"></i></button></div><div class="scene-content"><pre class="json-output"><code>${highlightJSON(jsonString)}</code></pre></div>`;
+                                    sceneBlock.querySelector('button[data-action="copy-scene"]').dataset.text = jsonString.trim();
                                     previewContent.appendChild(sceneBlock);
                                 });
                             } else {
@@ -685,9 +625,9 @@
                             }
                         });
 
-                        const createBtn = (action, icon, title, clickHandler) => { const b=document.createElement('button'); b.className='action-btn toolbar-btn'; b.title=title; b.innerHTML=icon; b.onclick=clickHandler; return b; };
-                        previewToolbar.appendChild(createBtn('copy-all', '📋', 'نسخ الكل', (e) => copyToClipboard(allContent, e.currentTarget)));
-                        previewToolbar.appendChild(createBtn('download', '💾', 'تنزيل', () => downloadContent(allContent, `Project-${project.id}.md`)));
+                        const createBtn = (action, icon, title, clickHandler) => { const b=document.createElement('button'); b.className='action-btn toolbar-btn'; b.title=title; b.innerHTML=`<i class="fa-solid ${icon}"></i>`; b.onclick=clickHandler; return b; };
+                        previewToolbar.appendChild(createBtn('copy-all', 'fa-copy', 'نسخ الكل', (e) => copyToClipboard(allContent, e.currentTarget)));
+                        previewToolbar.appendChild(createBtn('download', 'fa-download', 'تنزيل', () => downloadContent(allContent, `Project-${project.id}.md`)));
                         $('#load-from-preview-btn').dataset.projectId = project.id;
                         toggleModal('preview-modal', true);
                     }
@@ -709,20 +649,31 @@
                         $('#director-style').value = settings.style || '';
                         $('#videoDuration').value = settings.duration || 5;
                         
-                        const toneSelect = $('#tone-of-voice');
-                        const toneToSelect = toneSelect.querySelector(`.option-item[data-value="${settings.tone || 'إبداعية'}"]`);
-                        if(toneToSelect){
-                            toneSelect.querySelector('span').textContent = toneToSelect.textContent;
-                            toneSelect.dataset.value = toneToSelect.dataset.value;
-                        }
-
-                        const dialectSelect = $('#dialect-selector');
-                        const dialectToSelect = dialectSelect.querySelector(`.option-item[data-value="${settings.dialect || 'مصرية'}"]`);
-                        if(dialectToSelect){
-                           dialectSelect.querySelector('span').textContent = dialectToSelect.textContent;
-                           dialectSelect.dataset.value = dialectToSelect.dataset.value;
-                        }
-
+                        document.querySelectorAll('.custom-select').forEach(sel => {
+                            const selId = sel.id.replace('-selector', '').replace('-', '_');
+                            const value = settings[selId] || sel.querySelector('.option-item').dataset.value;
+                            const item = sel.querySelector(`.option-item[data-value="${value}"]`);
+                            const customInput = $('#custom-dialect-input');
+                            if(item) {
+                                sel.querySelector('.option-item.selected')?.classList.remove('selected');
+                                item.classList.add('selected');
+                                sel.querySelector('span').textContent = item.textContent;
+                                sel.dataset.value = item.dataset.value;
+                                if(sel.id === 'dialect-selector') {
+                                    customInput.style.display = 'none';
+                                }
+                            } else if (sel.id === 'dialect-selector') {
+                                const otherOpt = sel.querySelector('.option-item[data-value="other"]');
+                                if(otherOpt){
+                                    otherOpt.classList.add('selected');
+                                    sel.querySelector('span').textContent = otherOpt.textContent;
+                                    sel.dataset.value = 'other';
+                                    customInput.value = settings.dialect;
+                                    customInput.style.display = 'block';
+                                }
+                            }
+                        });
+                        
                         renderOutput(p.outputs);
                         toggleModal('preview-modal', false);
                         toggleModal('projects-modal', false);
