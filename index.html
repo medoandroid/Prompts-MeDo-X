@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
@@ -27,11 +28,11 @@
         header h1 { font-size: 2.2rem; font-weight: 800; color: var(--primary-color); }
         .header-actions { display: flex; gap: 0.75rem; align-items: center; }
         .card { background-color: var(--surface-color); padding: 2rem; border-radius: var(--border-radius); box-shadow: var(--shadow); margin-bottom: 2.5rem; }
-        textarea, input, select, .scene-content, .preview-content, #outputContent { user-select: text; }
+        textarea, input, select, .scene-content, .preview-content, #outputContent, .json-output { user-select: text; }
         textarea { width: 100%; min-height: 140px; padding: 1.2rem; border-radius: 12px; border: 2px solid var(--border-color); background-color: var(--input-bg-color); color: var(--text-color); font-family: var(--font-family); font-size: 1.1rem; resize: vertical; transition: all 0.2s ease; }
         textarea:focus { outline: none; border-color: var(--primary-color); }
         .input-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; margin-top: 1.5rem; }
-        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; align-items: end; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1.5rem; align-items: flex-start; }
         .input-group { display: flex; flex-direction: column; gap: 0.5rem; }
         .input-group label { font-weight: 700; opacity: 0.9; font-size: 0.9rem; }
         .input-group input { width: 100%; padding: 0.8rem; border-radius: 12px; border: 2px solid var(--border-color); background-color: var(--input-bg-color); color: var(--text-color); font-size: 1rem; }
@@ -47,8 +48,8 @@
         .option-item { padding: 0.8rem 1rem; cursor: pointer; }
         .option-item:hover { background-color: var(--input-bg-color); }
         .option-item.selected { background-color: var(--primary-color); color: white; }
-        .segmented-control { display: flex; background-color: var(--input-bg-color); border-radius: 12px; padding: 4px; }
-        .sg-btn { flex: 1; padding: 0.7rem; border: none; background: transparent; color: var(--text-secondary-color); font-size: 1rem; font-weight: 700; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; }
+        .segmented-control { display: flex; flex-wrap: wrap; background-color: var(--input-bg-color); border-radius: 12px; padding: 4px; }
+        .sg-btn { flex: 1; text-align: center; padding: 0.7rem; border: none; background: transparent; color: var(--text-secondary-color); font-size: 1rem; font-weight: 700; cursor: pointer; border-radius: 8px; transition: all 0.3s ease; }
         .sg-btn.active { color: var(--text-color); background-color: var(--surface-color); box-shadow: 0 1px 3px rgba(0,0,0,0.1);}
         .helper-text { font-size: 0.8rem; color: var(--text-secondary-color); text-align: center; margin-top: 0.5rem; min-height: 1.2em; }
         .main-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border-color); }
@@ -59,6 +60,8 @@
         .primary-btn:hover:not(:disabled) { background: var(--primary-hover-color); }
         .secondary-btn { background-color: var(--surface-color); border: 2px solid var(--border-color); }
         .toolbar-btn { font-size: 1.2rem; padding: 0; }
+        .action-btn i { font-size: 1.1em; }
+        .action-btn span { margin-right: 0.5rem; }
         .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
         .output-header h3 { font-size: 1.8rem; font-weight: 700; }
         #outputTabs { display: flex; flex-wrap: wrap; gap: 0.5rem; border-bottom: 2px solid var(--border-color); margin-bottom: 1.5rem; }
@@ -73,6 +76,8 @@
         .modal-overlay.visible .modal-content { transform: scale(1); }
         .modal-header { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
         .preview-content, #outputContent { flex-grow: 1; overflow-y: auto; background-color: var(--input-bg-color); padding: 1rem; border-radius: 12px; }
+        .preview-content::-webkit-scrollbar, #outputContent::-webkit-scrollbar { width: 8px; }
+        .preview-content::-webkit-scrollbar-thumb, #outputContent::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
         .modal-footer { flex-shrink: 0; display: flex; justify-content: flex-end; gap: 1rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); margin-top: 1.5rem; }
         .projects-list { list-style: none; padding: 0; }
         .project-item { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; background: var(--input-bg-color); cursor: pointer; transition: all 0.2s ease; }
@@ -87,24 +92,33 @@
         .spinner .dot:nth-child(1) { animation-delay: -0.32s; }
         .spinner .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes wave { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .json-output { white-space: pre; font-family: monospace; font-size: 0.9rem; direction: ltr; text-align: left; overflow-x: auto; }
+        .json-output::-webkit-scrollbar { height: 8px; }
+        .json-output::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .json-key { color: var(--danger-color); }
+        .json-string { color: var(--success-color); }
+        .json-number { color: var(--primary-color); }
+        .json-boolean, .json-null { color: #6f42c1; }
+        .dark-mode .json-boolean, .dark-mode .json-null { color: #c39ac9; }
         footer { text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); color: var(--text-secondary-color); font-size: 0.9rem; }
     </style>
 </head>
 <body>
-    <div id="projects-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2>المشاريع المحفوظة</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="projects-modal">✖</button></div><ul id="projects-list" class="projects-list"></ul></div></div>
-    <div id="preview-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2 id="preview-title">معاينة المشروع</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="preview-modal">✖</button></div><div id="preview-content" class="preview-content"></div><div class="modal-footer"><div id="preview-toolbar" class="header-actions"></div><button id="load-from-preview-btn" class="action-btn primary-btn">تحميل للمحرر</button></div></div></div>
+    <div id="projects-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2>المشاريع المحفوظة</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="projects-modal"><i class="fa-solid fa-xmark"></i></button></div><ul id="projects-list" class="projects-list"></ul></div></div>
+    <div id="preview-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2 id="preview-title">معاينة المشروع</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="preview-modal"><i class="fa-solid fa-xmark"></i></button></div><div id="preview-content" class="preview-content"></div><div class="modal-footer"><div id="preview-toolbar" class="header-actions"></div><button id="load-from-preview-btn" class="action-btn primary-btn">تحميل للمحرر</button></div></div></div>
     <div id="confirm-dialog" class="modal-overlay"><div class="modal-content" style="max-width: 400px;"><div class="modal-header"><h2>تأكيد</h2></div><p>حقل الإدخال فارغ. هل تريد المتابعة وإنشاء محتوى عشوائي إبداعي؟</p><div class="modal-footer"><button id="confirm-dialog-no" class="action-btn secondary-btn">لا</button><button id="confirm-dialog-yes" class="action-btn primary-btn">نعم، أنشئ</button></div></div></div>
     <div id="toast-notification"><div id="toast-spinner" class="spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span id="toast-message"></span></div>
 
     <div class="container">
-        <header><h1>Prompts MeDo X</h1><div class="header-actions"><button class="action-btn" id="my-projects-btn" title="المشاريع المحفوظة">📂</button><button class="action-btn" id="themeToggleBtn" title="تغيير الثيم">🌙</button></div></header>
+        <header><h1>Prompts MeDo X</h1><div class="header-actions"><button class="action-btn" id="my-projects-btn" title="المشاريع المحفوظة"><i class="fa-solid fa-folder-open"></i></button><button class="action-btn" id="themeToggleBtn" title="تغيير الثيم"><i class="fa-solid fa-moon"></i></button></div></header>
         <div class="card">
             <div id="output-options" class="segmented-control" style="margin-bottom: 1.5rem;">
                 <button class="sg-btn active" data-type="short_script">سكربت قصير</button>
                 <button class="sg-btn" data-type="veo_prompt">برومبت Veo3</button>
                 <button class="sg-btn" data-type="youtube_script">سكربت يوتيوب</button>
+                <button class="sg-btn" data-type="chatbot_prompt">برومبت Chatbot</button>
             </div>
-            <div class="input-header"><label for="userInput" style="font-weight: 700; opacity: 0.9; font-size: 1.1rem;">فكرتك الأساسية</label><button class="action-btn" id="inspiration-btn" title="إلهام">✨ <span>إلهام</span></button></div>
+            <div class="input-header"><label for="userInput" style="font-weight: 700; opacity: 0.9; font-size: 1.1rem;">فكرتك الأساسية</label><button class="action-btn" id="inspiration-btn" title="إلهام"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>إلهام</span></button></div>
             <textarea id="userInput" placeholder="اكتب فكرتك هنا أو اضغط على زر الإلهام..."></textarea>
             <div class="input-grid">
                 <div class="input-group">
@@ -116,12 +130,17 @@
                     <p id="model-helper-text" class="helper-text">الأقوى والأكثر إبداعًا، قد يكون أبطأ قليلاً.</p>
                 </div>
                  <div class="input-group">
-                    <label for="dialect-selector">اللهجة</label>
-                    <div class="custom-select" id="dialect-selector" data-value="مصرية"><div class="select-trigger"><span>مصرية</span><div class="arrow"></div></div><div class="options"><div class="option-item" data-value="مصرية">مصرية</div><div class="option-item" data-value="سعودية">سعودية</div><div class="option-item" data-value="لبنانية">لبنانية</div><div class="option-item" data-value="خليجية">خليجية</div><div class="option-item" data-value="فصحى">فصحى</div></div></div>
+                    <label>اللهجة</label>
+                    <div class="custom-select" id="dialect-selector"><div class="select-trigger"><span>مصرية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مصرية">مصرية</div><div class="option-item" data-value="سعودية">سعودية</div><div class="option-item" data-value="لبنانية">لبنانية</div><div class="option-item" data-value="خليجية">خليجية</div><div class="option-item" data-value="فصحى">فصحى</div><div class="option-item" data-value="other">أخرى...</div></div></div>
+                    <input type="text" id="custom-dialect-input" placeholder="اكتب لهجتك هنا..." style="display: none; margin-top: 0.5rem;">
                 </div>
                 <div class="input-group">
-                    <label for="tone-of-voice">نبرة الكتابة</label>
-                    <div class="custom-select" id="tone-of-voice" data-value="إبداعية"><div class="select-trigger"><span>إبداعية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="إبداعية">إبداعية</div><div class="option-item" data-value="رسمية">رسمية</div><div class="option-item" data-value="تسويقية">تسويقية</div><div class="option-item" data-value="تعليمية">تعليمية</div><div class="option-item" data-value="مرحة">مرحة</div></div></div>
+                    <label>نبرة الكتابة</label>
+                    <div class="custom-select" id="tone-of-voice"><div class="select-trigger"><span>إبداعية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="إبداعية">إبداعية</div><div class="option-item" data-value="رسمية">رسمية</div><div class="option-item" data-value="تسويقية">تسويقية</div><div class="option-item" data-value="تعليمية">تعليمية</div><div class="option-item" data-value="مرحة">مرحة</div></div></div>
+                </div>
+                 <div class="input-group" data-controls-for="chatbot_prompt">
+                    <label>اختر دور للـ AI</label>
+                    <div class="custom-select" id="chatbot-role"><div class="select-trigger"><span>مساعد عام</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مساعد عام">مساعد عام</div><div class="option-item" data-value="خبير تسويق">خبير تسويق</div><div class="option-item" data-value="كاتب سيناريو">كاتب سيناريو</div><div class="option-item" data-value="مطور برامج">مطور برامج</div><div class="option-item" data-value="مدرب شخصي">مدرب شخصي</div></div></div>
                 </div>
                 <div class="input-group" data-controls-for="short_script veo_prompt">
                     <label for="director-style">البصمة الإخراجية (اختياري)</label>
@@ -148,12 +167,112 @@
     <script>
     try {
         document.addEventListener('DOMContentLoaded', function() {
-            const API_KEY = 'AIzaSyAdSaUJFwyBLFckhP6eMuRdBsc7Qb_kCFo';
-            const PROJECTS_STORAGE_KEY = 'MeDoX_Projects_Gold';
+            const API_KEY = 'AIzaSyAL-BevRKG83YT2IcPt4qEU7vy7BXKT4uc';
+            const PROJECTS_STORAGE_KEY = 'MeDoX_Projects_Masterpiece';
             let currentOutputFormat = 'short_script';
             let lastGeneratedData = {};
             let isGenerating = false;
-            let selectedModel = 'gemini-2.5-pro';
+            let selectedModel = 'gemini-2.5-flash';
+            const apiCache = new Map();
+
+            const $ = (selector) => document.querySelector(selector);
+            
+            const showToast = (message, type = 'info', isLoading = false) => {
+                const toast = $('#toast-notification');
+                if(!toast) return;
+                $('#to        .project-item { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 1rem; border-radius: 12px; margin-bottom: 1rem; background: var(--input-bg-color); cursor: pointer; transition: all 0.2s ease; }
+        .project-item:hover { transform: scale(1.02); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .placeholder { width: 100%; display: flex; justify-content: center; align-items: center; min-height: 300px; color: var(--text-secondary-color); font-size: 1.2rem; background-color: var(--input-bg-color); border-radius: var(--border-radius); }
+        #toast-notification { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-150%); color: var(--text-color); padding: 1rem 1.5rem; border-radius: 12px; box-shadow: var(--shadow); display: flex; align-items: center; gap: 1rem; z-index: 1001; transition: all 0.4s ease-in-out; background-color: var(--surface-color); border-left: 5px solid var(--primary-color);}
+        #toast-notification.success { border-left-color: var(--success-color); }
+        #toast-notification.error { border-left-color: var(--danger-color); }
+        #toast-notification.visible { transform: translateX(-50%) translateY(0); }
+        .spinner { display: flex; align-items: center; justify-content: center; }
+        .spinner .dot { width: 8px; height: 8px; margin: 0 3px; background-color: currentColor; border-radius: 50%; animation: wave 1.4s infinite ease-in-out both; }
+        .spinner .dot:nth-child(1) { animation-delay: -0.32s; }
+        .spinner .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes wave { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+        .json-output { white-space: pre; font-family: monospace; font-size: 0.9rem; direction: ltr; text-align: left; overflow-x: auto; }
+        .json-output::-webkit-scrollbar { height: 8px; }
+        .json-output::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+        .json-key { color: var(--danger-color); }
+        .json-string { color: var(--success-color); }
+        .json-number { color: var(--primary-color); }
+        .json-boolean, .json-null { color: #6f42c1; }
+        .dark-mode .json-boolean, .dark-mode .json-null { color: #c39ac9; }
+        footer { text-align: center; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color); color: var(--text-secondary-color); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <div id="projects-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2>المشاريع المحفوظة</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="projects-modal"><i class="fa-solid fa-xmark"></i></button></div><ul id="projects-list" class="projects-list"></ul></div></div>
+    <div id="preview-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2 id="preview-title">معاينة المشروع</h2><button class="toolbar-btn action-btn" data-action="close-modal" data-target="preview-modal"><i class="fa-solid fa-xmark"></i></button></div><div id="preview-content" class="preview-content"></div><div class="modal-footer"><div id="preview-toolbar" class="header-actions"></div><button id="load-from-preview-btn" class="action-btn primary-btn">تحميل للمحرر</button></div></div></div>
+    <div id="confirm-dialog" class="modal-overlay"><div class="modal-content" style="max-width: 400px;"><div class="modal-header"><h2>تأكيد</h2></div><p>حقل الإدخال فارغ. هل تريد المتابعة وإنشاء محتوى عشوائي إبداعي؟</p><div class="modal-footer"><button id="confirm-dialog-no" class="action-btn secondary-btn">لا</button><button id="confirm-dialog-yes" class="action-btn primary-btn">نعم، أنشئ</button></div></div></div>
+    <div id="toast-notification"><div id="toast-spinner" class="spinner"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><span id="toast-message"></span></div>
+
+    <div class="container">
+        <header><h1>Prompts MeDo X</h1><div class="header-actions"><button class="action-btn" id="my-projects-btn" title="المشاريع المحفوظة"><i class="fa-solid fa-folder-open"></i></button><button class="action-btn" id="themeToggleBtn" title="تغيير الثيم"><i class="fa-solid fa-moon"></i></button></div></header>
+        <div class="card">
+            <div id="output-options" class="segmented-control" style="margin-bottom: 1.5rem;">
+                <button class="sg-btn active" data-type="short_script">سكربت قصير</button>
+                <button class="sg-btn" data-type="veo_prompt">برومبت Veo3</button>
+                <button class="sg-btn" data-type="youtube_script">سكربت يوتيوب</button>
+                <button class="sg-btn" data-type="chatbot_prompt">برومبت Chatbot</button>
+            </div>
+            <div class="input-header"><label for="userInput" style="font-weight: 700; opacity: 0.9; font-size: 1.1rem;">فكرتك الأساسية</label><button class="action-btn" id="inspiration-btn" title="إلهام"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>إلهام</span></button></div>
+            <textarea id="userInput" placeholder="اكتب فكرتك هنا أو اضغط على زر الإلهام..."></textarea>
+            <div class="input-grid">
+                <div class="input-group">
+                    <label>اختر الموديل</label>
+                    <div class="segmented-control" id="model-selector">
+                        <button class="sg-btn active" data-model="gemini-2.5-pro">Pro</button>
+                        <button class="sg-btn" data-model="gemini-2.5-flash">Flash</button>
+                    </div>
+                    <p id="model-helper-text" class="helper-text">الأقوى والأكثر إبداعًا، قد يكون أبطأ قليلاً.</p>
+                </div>
+                 <div class="input-group">
+                    <label>اللهجة</label>
+                    <div class="custom-select" id="dialect-selector"><div class="select-trigger"><span>مصرية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مصرية">مصرية</div><div class="option-item" data-value="سعودية">سعودية</div><div class="option-item" data-value="لبنانية">لبنانية</div><div class="option-item" data-value="خليجية">خليجية</div><div class="option-item" data-value="فصحى">فصحى</div><div class="option-item" data-value="other">أخرى...</div></div></div>
+                    <input type="text" id="custom-dialect-input" placeholder="اكتب لهجتك هنا..." style="display: none; margin-top: 0.5rem;">
+                </div>
+                <div class="input-group">
+                    <label>نبرة الكتابة</label>
+                    <div class="custom-select" id="tone-of-voice"><div class="select-trigger"><span>إبداعية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="إبداعية">إبداعية</div><div class="option-item" data-value="رسمية">رسمية</div><div class="option-item" data-value="تسويقية">تسويقية</div><div class="option-item" data-value="تعليمية">تعليمية</div><div class="option-item" data-value="مرحة">مرحة</div></div></div>
+                </div>
+                 <div class="input-group" data-controls-for="chatbot_prompt">
+                    <label>اختر دور للـ AI</label>
+                    <div class="custom-select" id="chatbot-role"><div class="select-trigger"><span>مساعد عام</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مساعد عام">مساعد عام</div><div class="option-item" data-value="خبير تسويق">خبير تسويق</div><div class="option-item" data-value="كاتب سيناريو">كاتب سيناريو</div><div class="option-item" data-value="مطور برامج">مطور برامج</div><div class="option-item" data-value="مدرب شخصي">مدرب شخصي</div></div></div>
+                </div>
+                <div class="input-group" data-controls-for="short_script veo_prompt">
+                    <label for="director-style">البصمة الإخراجية (اختياري)</label>
+                    <input type="text" id="director-style" placeholder="مثال: بأسلوب سينمائي قديم">
+                </div>
+                <div class="input-group" data-controls-for="veo_prompt">
+                    <label for="sceneCount">عدد المشاهد (للبرومبت)</label>
+                    <input type="number" id="sceneCount" value="3" min="1" max="10">
+                </div>
+                <div class="input-group" data-controls-for="youtube_script">
+                    <label for="videoDuration">مدة الفيديو (بالدقائق)</label>
+                    <input type="number" id="videoDuration" value="5" min="1" max="60">
+                </div>
+            </div>
+            <div class="main-controls"><button id="generateAllBtn" class="action-btn secondary-btn"><span>إنشاء الكل</span></button><button id="generateBtn" class="action-btn primary-btn"><span>أنشئ الآن</span></button></div>
+        </div>
+        <div class="card">
+            <div id="output-container" style="display: none;"><div class="output-header"><h3>التحفة النهائية</h3><div id="main-toolbar" class="header-actions"></div></div><div id="outputTabs"></div><div id="outputContent"></div></div>
+            <div id="placeholder" class="placeholder">الاستوديو الإبداعي في انتظار أوامرك...</div>
+        </div>
+        <footer><p>جميع الحقوق محفوظة Mohamed Ayman - MeDoAnDrOiD 2025</p></footer>
+    </div>
+
+    <script>
+    try {
+        document.addEventListener('DOMContentLoaded', function() {
+            const API_KEY = 'AIzaSyAL-BevRKG83YT2IcPt4qEU7vy7BXKT4uc';
+            const PROJECTS_STORAGE_KEY = 'MeDoX_Projects_Masterpiece';
+            let currentOutputFormat = 'short_script';
+            let lastGeneratedData = {};
+            let isGenerating = false;
+            let selectedModel = 'gemini-2.5-flash';
             const apiCache = new Map();
 
             const $ = (selector) => document.querySelector(selector);
@@ -162,6 +281,7 @@
                 const toast = $('#toast-notification');
                 if(!toast) return;
                 $('#toast-message').textContent = message;
+   ('#toast-message').textContent = message;
                 toast.className = 'toast';
                 if (type !== 'info') toast.classList.add(type);
                 $('#toast-spinner').style.display = isLoading ? 'flex' : 'none';
