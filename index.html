@@ -129,9 +129,23 @@
                     </div>
                     <p id="model-helper-text" class="helper-text">الأقوى والأكثر إبداعًا، قد يكون أبطأ قليلاً.</p>
                 </div>
-                 <div class="input-group">
-                    <label>اللهجة</label>
-                    <div class="custom-select" id="dialect-selector"><div class="select-trigger"><span>مصرية</span><div class="arrow"></div></div><div class="options"><div class="option-item selected" data-value="مصرية">مصرية</div><div class="option-item" data-value="سعودية">سعودية</div><div class="option-item" data-value="لبنانية">لبنانية</div><div class="option-item" data-value="خليجية">خليجية</div><div class="option-item" data-value="فصحى">فصحى</div><div class="option-item" data-value="other">أخرى...</div></div></div>
+               <div class="input-group">
+    <label>اللهجة</label>
+    <div class="custom-select" id="dialect-selector">
+        <div class="select-trigger">
+            <span>مصرية</span>
+            <div class="arrow"></div>
+        </div>
+        <div class="options">
+            <div class="option-item selected" data-value="egyptian">مصرية</div>
+            <div class="option-item" data-value="saudi">سعودية</div>
+            <div class="option-item" data-value="lebanese">لبنانية</div>
+            <div class="option-item" data-value="khaleeji">خليجية</div>
+            <div class="option-item" data-value="fusha">فصحى</div>
+            <div class="option-item" data-value="other">أخرى...</div>
+        </div>
+    </div>
+
                     <input type="text" id="custom-dialect-input" placeholder="اكتب لهجتك هنا..." style="display: none; margin-top: 0.5rem;">
                 </div>
                 <div class="input-group">
@@ -453,7 +467,7 @@
                     const btn = $('#inspiration-btn');
                     toggleButtonLoading(btn, true);
                     let dialect = $('#dialect-selector').dataset.value;
-                    if (dialect === 'other') dialect = $('#custom-dialect-input').value.trim() || 'مصرية';
+                    if (dialect === 'other') dialect = $('#custom-dialect-input').value.trim() || 'Egyptian';
                     const prompt = buildMasterPrompt({format: 'inspiration', tone: $('#tone-of-voice').dataset.value, dialect: dialect});
                     const idea = await performGeneration(prompt);
                     toggleButtonLoading(btn, false);
